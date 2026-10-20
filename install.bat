@@ -19,7 +19,7 @@ if not exist "%ZEN_DIR%" (
 
 set "MOD_ID=72f8f48d-86b9-4487-acea-eb4977b18f21"
 
-:: Find the default profile directory
+:: Find active profile directory
 set "PROFILE_DIR="
 for /d %%D in ("%ZEN_DIR%\*default*") do (
     set "PROFILE_DIR=%%D"
@@ -47,11 +47,19 @@ if not exist "%THEMES_DIR%" (
     mkdir "%THEMES_DIR%" 2>nul
 )
 
-echo [*] Installing mod files to %THEMES_DIR%...
-copy /y "%~dp0chrome.css" "%THEMES_DIR%\chrome.css" >nul
-copy /y "%~dp0preferences.json" "%THEMES_DIR%\preferences.json" >nul
-copy /y "%~dp0theme.json" "%THEMES_DIR%\theme.json" >nul
-if exist "%~dp0image.png" copy /y "%~dp0image.png" "%THEMES_DIR%\image.png" >nul
+echo [*] Installing mod files...
+if exist "%~dp0chrome.css" (
+    copy /y "%~dp0chrome.css" "%THEMES_DIR%\chrome.css" >nul
+    copy /y "%~dp0preferences.json" "%THEMES_DIR%\preferences.json" >nul
+    copy /y "%~dp0theme.json" "%THEMES_DIR%\theme.json" >nul
+    if exist "%~dp0image.png" copy /y "%~dp0image.png" "%THEMES_DIR%\image.png" >nul
+) else (
+    echo [*] Downloading latest mod files from GitHub...
+    curl -sSL "https://raw.githubusercontent.com/alvyn16/better-ctrl-tab/main/chrome.css" -o "%THEMES_DIR%\chrome.css"
+    curl -sSL "https://raw.githubusercontent.com/alvyn16/better-ctrl-tab/main/preferences.json" -o "%THEMES_DIR%\preferences.json"
+    curl -sSL "https://raw.githubusercontent.com/alvyn16/better-ctrl-tab/main/theme.json" -o "%THEMES_DIR%\theme.json"
+    curl -sSL "https://raw.githubusercontent.com/alvyn16/better-ctrl-tab/main/image.png" -o "%THEMES_DIR%\image.png"
+)
 
 echo [*] Registering mod in zen-themes.json...
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
